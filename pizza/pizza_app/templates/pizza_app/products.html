@@ -1,0 +1,140 @@
+{% extends 'pizza_app/base.html' %}
+{% load static %}
+
+{% block customCSS %}
+    <link href="{% static 'pizza_app/css/product.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+{% endblock %}
+
+{% block content %}
+   <section class="page-section">
+      <div class="container">
+          <div id="success" class="alert alert-success" style="display:none;position:fixed;z-index:100">
+            <strong>Success!</strong> Pizza added to cart.
+           </div>
+          <div class="row">
+              {% for pizza in pizzas %}
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6  product_container">
+                <img src="/media/{{ pizza.image }}" alt="Avatar" class="product_image">
+                <div class="product_overlay">
+                  <div class="product_text">
+                    <h3>{{ pizza.name }} </h3>                    
+                    <h6 id="previousPrice_{{ pizza.id }}" style="color:#00ffff"><del>{{ pizza.previous_regular_pizza_price }} ‎৳</del></h6>                    
+                    <h4 id="currentPrice_{{ pizza.id }}" style="color:#00ffff">{{ pizza.current_regular_pizza_price }} ‎৳</h4>    
+                    
+                    <div id="{{ pizza.id }}" style="display:none;"> 
+                      <form class='my-ajax-form' id="pizza_form" data-url="{% url 'pizza_choice' %}" method="POST" class="m-4">
+                      {% csrf_token %}
+                        <input type="hidden" value="{{ pizza.id }}" name="pizzaID" readonly>
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                          <label class="btn btn-secondary active" onclick="pizzaType('{{ pizza.id }}','regular')">
+                            <input type="radio" name="pizzaSize" id="regularPizza" value="regular" autocomplete="off" checked> Regular
+                          </label>
+                          <label class="btn btn-secondary" onclick="pizzaType('{{ pizza.id }}','big')">
+                            <input type="radio" name="pizzaSize" id="bigPizza" value="big" autocomplete="off"> Big
+                          </label>
+                          <label class="btn btn-secondary"  onclick="pizzaType('{{ pizza.id }}','small')">
+                            <input type="radio" name="pizzaSize" id="smallPizza" value="small" autocomplete="off"> Small
+                          </label>
+                        </div>
+                        <br/>
+                        <div class="row mt-4 small">
+                          <label class="col-5 col-form-label">Quantity:</label>
+                          <div class="col-7 mb-2">
+                            <input class="form-control" type="number" value="1" id="quantity" name="pizzaQuantity">
+                          </div>
+                          <label class="col-5 col-form-label">Cost:</label>
+                          <div class="col-7">
+                            <input class="form-control" type="text" value="{{ pizza.current_regular_pizza_price }}" id="reg_price_{{ pizza.id }}" readonly>
+                            <input class="form-control" type="text" value="{{ pizza.current_big_pizza_price }}" id="big_price_{{ pizza.id }}" style="display:none" readonly>
+                            <input class="form-control" type="text" value="{{ pizza.current_small_pizza_price }}" id="small_price_{{ pizza.id }}" style="display:none" readonly>
+                          </div>
+                        </div></br>
+                        <input type="submit"  class="btn btn-warning" value="Buy Now" autocomplete="off">
+                      </form>
+                    </div>
+                    <button type="button" id="buyOne_{{ pizza.id }}" class="btn btn-warning" onclick="buyPizza('{{ pizza.id }}')">Buy one</button>
+                  </div>
+                </div>
+              </div>
+              
+                    <!-- Buy pizza code -->
+                    <script>
+                        <!-- Buy one button activity -->
+                        function buyPizza(productID) {
+                            document.getElementById(productID).style.cssText="display:block;";
+                            document.getElementById("buyOne_"+productID).style.cssText="display:none;";
+                            document.getElementById("previousPrice_"+productID).style.cssText="display:none;";
+                            document.getElementById("currentPrice_"+productID).style.cssText="display:none;";   
+                        }
+                        <!-- Showing Pizza price -->
+                        function pizzaType(productID, type){
+                            if(type=="regular"){
+                                document.getElementById("reg_price_"+productID).style.cssText="display:block;";
+                                document.getElementById("big_price_"+productID).style.cssText="display:none;";
+                                document.getElementById("small_price_"+productID).style.cssText="display:none;";
+                            }
+                            else if(type=="big"){
+                                document.getElementById("reg_price_"+productID).style.cssText="display:none;";
+                                document.getElementById("big_price_"+productID).style.cssText="display:block;";
+                                document.getElementById("small_price_"+productID).style.cssText="display:none;";
+                            }
+                            else if(type=="small"){                                
+                                document.getElementById("reg_price_"+productID).style.cssText="display:none;";
+                                document.getElementById("big_price_"+productID).style.cssText="display:none;";
+                                document.getElementById("small_price_"+productID).style.cssText="display:block;";
+                            }  
+                            else{                                
+                                document.getElementById("reg_price_"+productID).style.cssText="display:none;";
+                                document.getElementById("big_price_"+productID).style.cssText="display:none;";
+                                document.getElementById("small_price_"+productID).style.cssText="display:none;"
+                            }              
+                        }
+                    </script>  
+              {% endfor %}
+      </div>
+      </div>
+    </section>
+
+{% endblock %}
+
+{% block extraJS %}
+<!-- jQuery (required for this Ajax tutorial) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script>
+        $(document).ready(function(){
+            var $submitForm = $('.my-ajax-form')            
+            var $cartItem = $('.badge')
+            $submitForm.submit(function(event){
+                event.preventDefault()
+                var $formData = $(this).serialize()
+                var $thisURL = $submitForm.attr('data-url') || window.location.href // or set your own url
+                $.ajax({
+                    method: "POST",
+                    url: $thisURL,
+                    data: $formData,
+                    success: handleFormSuccess,
+                    error: handleFormError,
+                })
+            })
+
+            function handleFormSuccess(data, textStatus, jqXHR){
+                console.log(data)
+                console.log(textStatus)
+                console.log(jqXHR)
+                <!-- Nav cart item update -->
+                var $navBatch = $(data).find('.badge').html()
+                $cartItem.html($navBatch);
+                $("#success").css("display", "block");
+                setTimeout(function() { $("#success").hide(); }, 10000);
+            }
+
+            function handleFormError(jqXHR, textStatus, errorThrown){
+                console.log(jqXHR)
+                console.log(textStatus)
+                console.log(errorThrown)
+            }
+        })
+        </script>        
+{% endblock %}
+

@@ -1,0 +1,57 @@
+.product_container {
+  position: relative;
+  width: 50%;  
+  margin: 10px 0px;
+}
+
+.product_image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 5px dotted #9a9a9a;
+}
+
+.product_overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #341e17;
+  overflow: hidden;
+  width: 0;
+  height: 100%;
+  transition: .5s ease;
+}
+
+.product_container:hover .product_overlay {
+  width: 100%;
+}
+
+.product_text {
+  color: white;
+  font-size: 20px;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+.btn-secondary:hover {
+    background-color: #2cbd9c;
+    border-color: #2cbd9c;
+}
+.btn-secondary:not(:disabled):not(.disabled).active, .btn-secondary:not(:disabled):not(.disabled):active, .show>.btn-secondary.dropdown-toggle {
+    background-color: #2cbd9c;
+    border-color: #2cbd9c;
+}
+
+@media only screen and (max-width: 440px) {
+.product_container {
+  width: 100% !important; 
+  height: 275px; 
+}
+
+}

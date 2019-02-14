@@ -1,0 +1,40 @@
+input{
+    min-width: 48%;
+    padding: 4px 15px;
+    margin: 5px;
+    border-radius: 5em;
+    outline: none;
+    border: 1px solid burlywood;    
+    text-align: center;
+}
+input:focus{
+    border: 3px solid #e6a756;
+}
+.cart{
+    background: antiquewhite;
+    padding: 20px;
+    margin-bottom: 5px;
+}
+.cart-input{
+    min-width: 10%;
+    padding: 2px 25px;
+    margin: 0;
+    border-radius: 5em;
+    outline: none;
+    border: 1px solid burlywood;    
+    text-align: center;
+}
+.cart-submit{
+    min-width: 30%;
+    padding: 7px 25px;
+    margin: 20px;
+    margin-bottom: 70px;
+    border-radius: 5em;
+    outline: none;
+    text-align: center;
+}
+.payment-img{
+    height: 45px;    
+    margin-bottom: 50px;
+    cursor: pointer;
+}
